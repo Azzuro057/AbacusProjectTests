@@ -1,0 +1,123 @@
+default:
+  binary: bin/Debug/net5.0/Abacus
+  stderr_mode: strict # parce que je veux vérifier que c'est la bonne erreur qui se lance (sinon exists)
+
+testsuites:
+  - name: General-Tests
+    fatal: false
+    tests:
+      - name: wrong_argument
+        timeout: 1
+        args:
+          - "--awrongargument"
+        stdin: '2 3 + 2'
+        stderr: "Unknown Argument: --awrongargument\n"
+        exit_code: 1
+  - name: RPN-Tests
+    fatal: true
+    tests:
+      - name: simple_add
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '2 2 +'
+        stdout : "4\n"
+        exit_code : 0
+      - name: simple_minus
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '2 1 -'
+        stdout : "1\n"
+        exit_code : 0
+      - name: simple_div
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '8 2 /'
+        stdout : "4\n"
+        exit_code : 0
+      - name: simple_mult
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '2 3 *'
+        stdout : "6\n"
+        exit_code : 0
+      - name: simple_power
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '2 3 ^'
+        stdout : "8\n"
+        exit_code : 0
+      - name: simple_mod
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '9 2 %'
+        stdout : "1\n"
+        exit_code : 0
+      - name: multi_digits_numbers
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '223 2 +'
+        stdout : "225\n"
+        exit_code : 0
+      - name: negative_results_numbers
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '1 4 -'
+        stdout : "-3\n"
+        exit_code : 0
+      - name: solo_digit
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '1'
+        stdout : "1\n"
+        exit_code : 0
+      - name: double_operation_numbers_op_op
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '3 9 2 * +'
+        stdout : "21\n"
+        exit_code : 0
+      - name: double_operation_numbers_op_nb_op
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '2 9 * 1 +'
+        stdout : "19\n"
+        exit_code : 0
+      - name: error_div_by_0
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '8 0 /'
+        stderr : "Runtime Exception: Division by zero.\n"
+        exit_code : 3
+      - name: error_operator_expected_no_op
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '8 0'
+        stderr : "Syntax Error: operator expected.\n"
+        exit_code : 2
+      - name: error_operator_expected_no_op_at_the_end
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '8 0 + 2'
+        stderr : "Syntax Error: operator expected.\n"
+        exit_code : 2
+      - name: error_operator_expected_missing_an_op
+        timeout: 1
+        args:
+          - "--rpn"
+        stdin : '8 0 2 *'
+        stderr : "Syntax Error: operator expected.\n"
+        exit_code : 2
